@@ -13,3 +13,8 @@ class UpdateProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('bio', 'profile_photo','contact')
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['comment']

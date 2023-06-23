@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load bootstrap4 %}
 {% block content %}
 <div class="container">
 
@@ -41,7 +41,27 @@
         <p>Please <a href="{% url 'login' %}">log in</a> to like this project.</p>
         {% endif %}
         <strong style=" margin-right: 60%;">{{proj.likes.all.count}}likes</strong>
+
+        <div>
+          <p>Comments:</p>
+          {% for comment in comments %}
+          <p> <span><strong>{{comment.user}}</strong></span>: {{comment.comment}} {{comment.posted_at|timesince}} ago</p>
+          {% endfor %}
+
+          <p>{{proj.posted_at|timesince}} ago</p>
+            <form action="{% url 'comments' project_id=proj.id %}" class="comment-form com" method="post"
+                enctype="multipart/form-data" style="width: 50%; margin-left: 17%;">
+                {% csrf_token%}
+                {% bootstrap_form form %}
+                <div class="form-group text-center">
+                    <input type="submit" class="btn btn-primary login-btn" value="Comment">
+                </div>
+                <input type="hidden" name="next" value="{{next}}">
+            </form>
+        </div>
         {% endfor %}
+
+        
 
       </div>
 

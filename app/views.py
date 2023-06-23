@@ -10,8 +10,18 @@ from django.views.generic import DetailView
 # To retrieve Company details
 def index(request):
     projects = Project.objects.all().order_by('-id')
+    comments = Comment.objects.all().order_by('-id')
+    if request.method == 'POST':  
+        form = CommentForm(request.POST, request.FILES)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.save()
+            return redirect('index')
     
-    return render(request, "index.html", {"projects": projects})
+    else:
+        form = CommentForm()
+    return render(request, "index.html", {"projects": projects, 'form':form, "comments":comments})
 
 def like(request,project_id):
     project = get_object_or_404(Project, id=project_id)
@@ -48,3 +58,23 @@ def update_profile(request,id):
             
     return render(request, 'update_profile.html', {"form":form})
 
+@login_required(login_url='/accounts/login/')
+
+@login_required
+def comments(request,project_id):
+  form = CommentForm()
+  project = Project.objects.filter(id = project_id).first()
+  if request.method == 'POST':
+    form = CommentForm(request.POST)
+    if form.is_valid():
+      comment = form.save(commit = False)
+      comment.user = request.user
+      comment.project = project
+      comment.save() 
+    return redirect('index')
+  
+
+
+
+
+    
