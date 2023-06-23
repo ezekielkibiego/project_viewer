@@ -1,33 +1,53 @@
 {% extends "base.html" %}
 
-{% block content %} 
+{% block content %}
 <div class="container">
-    <div>
-        <h2 class="mt-5 text-center">Selected Projects</h2>
 
-        <div class="row">
-          {% for proj in projects %}
-          <div class="card col-md-4">
-            <div class="">
-              <p>{{ user.username }}</p>
-              <img src="{{ proj.image.url }}" alt="Project Image" width="150">
-              <div class="card-body">
-                <h4 class="card-title">{{proj.proj_name}}</h4>
-                <p class="card-text">{{proj.description}}</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{proj.repo_url}}" class="btn btn-outline-dark bg-dark text-white rounded-pill">Repository</a>
-                <a href="{{proj.live_link}}" class="btn btn-outline-dark bg-dark text-white rounded-pill">View Site</a>
-              </div>
-  
-            </div>
+  <h2 class="mt-5 text-center">Selected Projects</h2>
 
-          </div>
-        {% endfor %}
+  <div class="row">
+    <div class=" col-md-4">
+      {% for proj in projects %}
+
+      <div class="card">
+        <p>{{ user.username }}</p>
+        <img src="{{ proj.image.url }}" alt="Project Image" width="150">
+        <div class="card-body">
+          <h4 class="card-title">{{proj.proj_name}}</h4>
+          <p class="card-text">{{proj.description}}</p>
         </div>
+        <div class="card-footer">
+          <a href="{{proj.repo_url}}" class="btn btn-outline-dark bg-dark text-white rounded-pill">Repository</a>
+          <a href="{{proj.live_link}}" class="btn btn-outline-dark bg-dark text-white rounded-pill">View Site</a>
+        </div>
+
+
+
+
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'like' proj.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">
+            {% if user in proj.likes.all %}
+            Unlike
+            {% else %}
+            Like
+            {% endif %}
+
+
+          </button>
+        </form>
+        {% else %}
+        <p>Please <a href="{% url 'login' %}">log in</a> to like this project.</p>
+        {% endif %}
+        <strong style=" margin-right: 60%;">{{proj.likes.all.count}}likes</strong>
+        {% endfor %}
+
+      </div>
+
+
     </div>
-    
+  </div>
+
 </div>
 {%endblock%}
-
-

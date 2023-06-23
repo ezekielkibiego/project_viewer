@@ -4,12 +4,26 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from .forms import *
+from django.views.generic import DetailView
 
 
 # To retrieve Company details
 def index(request):
     projects = Project.objects.all().order_by('-id')
+    
     return render(request, "index.html", {"projects": projects})
+
+def like(request,project_id):
+    project = get_object_or_404(Project, id=project_id)
+    
+    if request.method == 'POST':
+        user = request.user
+        if user in project.likes.all():
+            project.likes.remove(user)
+        else:
+            project.likes.add(user)
+
+    return redirect('/', project_id=project.id)
 
 @login_required(login_url="/accounts/login/")
 def profile(request):
@@ -34,5 +48,3 @@ def update_profile(request,id):
             
     return render(request, 'update_profile.html', {"form":form})
 
-# def project(request):
-     
